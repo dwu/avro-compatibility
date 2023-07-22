@@ -15,3 +15,9 @@ jobs:
           distribution: 'temurin'
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots package
+      - name: Upload Snapshot
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
+        uses: actions/upload-artifact@v3
+        with:
+          name: avro-compatibility-jar-with-dependencies.jar
+          path: target/avro-compatibility-*-jar-with-dependencies.jar
