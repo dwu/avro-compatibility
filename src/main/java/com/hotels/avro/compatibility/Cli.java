@@ -35,6 +35,7 @@ public class Cli {
                 } else {
                     System.out.println("Result:\nWriter schema CANNOT be read with reader schema.\n\nReason(s):");
                     printIncompatibilities(result.getResult().getIncompatibilities());
+                    System.exit(1);
                 }
                 break;
             case MUTUAL_READ:
@@ -44,6 +45,7 @@ public class Cli {
                 } else {
                     System.out.println("Result:\nWriter schema CANNOT be mutually read with reader schema.\n\nReason(s):");
                     printIncompatibilities(result.getResult().getIncompatibilities());
+                    System.exit(1);
                 }
                 break;
         }
@@ -81,8 +83,10 @@ public class Cli {
             System.err.println("Invalid command line arguments. " + e.getMessage());
             HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp("avro-compatibility", options);
+            System.exit(1);
         } catch (IOException e) {
             System.err.println("Cannot read input file(s). " + e.getMessage());
+            System.exit(1);
         }
     }
 
