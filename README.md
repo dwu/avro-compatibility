@@ -1,3 +1,5 @@
+Note: This is a fork of https://github.com/ExpediaGroup/avro-compatibility
+
 # Avro compatibility
 A user friendly API for checking for and reporting on [Avro](https://avro.apache.org) schema incompatibilities.
 
