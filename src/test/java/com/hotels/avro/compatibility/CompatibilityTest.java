@@ -71,7 +71,7 @@ public class CompatibilityTest {
       + "\"name\":\"myrecord\","
       + "\"fields\":"
       + "[{\"type\":\"string\",\"name\":\"f1\"},"
-      + " {\"type\":\"string\",\"name\":\"f2\", \"default\": \"foo\"}]},"
+      + " {\"type\":\"string\",\"name\":\"f2\", \"default\": \"foo\"},"
       + " {\"type\":\"string\",\"name\":\"f3\", \"default\": \"bar\"}]}";
   private final Schema schema8 = parseSchema(schemaString8);
 
