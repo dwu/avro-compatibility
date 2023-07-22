@@ -22,27 +22,27 @@ public class Cli {
         }
     }
 
-    public void checkCompatibility(String sourceSchema, String targetSchema, Compatibility.CheckType checkType) {
-        Schema source = parseSchema(sourceSchema);
-        Schema target = parseSchema(targetSchema);
+    public void checkCompatibility(String writerSchema, String readerSchema, Compatibility.CheckType checkType) {
+        Schema writer = parseSchema(writerSchema);
+        Schema reader = parseSchema(readerSchema);
 
         CompatibilityCheckResult result = null;
         switch (checkType) {
             case CAN_BE_READ_BY:
-                result = Compatibility.checkThat(source).canBeReadBy(target);
+                result = Compatibility.checkThat(writer).canBeReadBy(reader);
                 if (result.isCompatible()) {
-                    System.out.println("Result: Source schema CAN be read with target schema");
+                    System.out.println("Result: Writer schema CAN be read with reader schema");
                 } else {
-                    System.out.println("Result:\nSource schema CANNOT be read with target schema.\n\nReason(s):");
+                    System.out.println("Result:\nWriter schema CANNOT be read with reader schema.\n\nReason(s):");
                     printIncompatibilities(result.getResult().getIncompatibilities());
                 }
                 break;
             case MUTUAL_READ:
-                result = Compatibility.checkThat(source).mutualReadWith(target);
+                result = Compatibility.checkThat(writer).mutualReadWith(reader);
                 if (result.isCompatible()) {
-                    System.out.println("Result: Source schema CAN be mutually read with target schema");
+                    System.out.println("Result: Writer schema CAN be mutually read with reader schema");
                 } else {
-                    System.out.println("Result:\nSource schema CANNOT be mutually read with target schema.\n\nReason(s):");
+                    System.out.println("Result:\nWriter schema CANNOT be mutually read with reader schema.\n\nReason(s):");
                     printIncompatibilities(result.getResult().getIncompatibilities());
                 }
                 break;
@@ -51,7 +51,7 @@ public class Cli {
 
     private void printIncompatibilities(List<SchemaCompatibility.Incompatibility> incompatibilities) {
         for (SchemaCompatibility.Incompatibility incompatibility : incompatibilities) {
-            System.out.println(String.format("- Type: %s\n  Location: %s\n  Source: %s\n  Target: %s", incompatibility.getType(), incompatibility.getLocation(), incompatibility.getWriterFragment(), incompatibility.getReaderFragment()));
+            System.out.println(String.format("- Type: %s\n  Location: %s\n  Writer: %s\n  Reader: %s", incompatibility.getType(), incompatibility.getLocation(), incompatibility.getWriterFragment(), incompatibility.getReaderFragment()));
         }
     }
 
@@ -59,23 +59,23 @@ public class Cli {
         Cli cli = new Cli();
 
         Options options = new Options();
-        options.addOption(Option.builder("s").longOpt("source").hasArg().desc("Source schema for compatibility check").required().build());
-        options.addOption(Option.builder("t").longOpt("target").hasArg().desc("Target schema for compatibility check").required().build());
-        options.addOption(Option.builder("m").longOpt("mutual").desc("Check for mutual compatibility.\nDefault: Check that source can be read by target.").build());
+        options.addOption(Option.builder("w").longOpt("writer").hasArg().desc("Writer schema for compatibility check").required().build());
+        options.addOption(Option.builder("r").longOpt("reader").hasArg().desc("Reader schema for compatibility check").required().build());
+        options.addOption(Option.builder("m").longOpt("mutual").desc("Check for mutual compatibility.\nDefault: Check that reader can read output produced by writer.").build());
 
         CommandLineParser parser = new DefaultParser();
         try {
             CommandLine line = parser.parse(options, args);
-            String source = line.getOptionValue("s");
-            String target = line.getOptionValue("t");
+            String writer = line.getOptionValue("w");
+            String reader = line.getOptionValue("r");
 
-            String sourceSchema = Files.asCharSource(new File(source), Charsets.UTF_8).read();
-            String targetSchema = Files.asCharSource(new File(target), Charsets.UTF_8).read();
+            String writerSchema = Files.asCharSource(new File(writer), Charsets.UTF_8).read();
+            String readerSchema = Files.asCharSource(new File(reader), Charsets.UTF_8).read();
 
             if (line.hasOption("m")) {
-                cli.checkCompatibility(sourceSchema, targetSchema, Compatibility.CheckType.MUTUAL_READ);
+                cli.checkCompatibility(writerSchema, readerSchema, Compatibility.CheckType.MUTUAL_READ);
             } else {
-                cli.checkCompatibility(sourceSchema, targetSchema, Compatibility.CheckType.CAN_BE_READ_BY);
+                cli.checkCompatibility(writerSchema, readerSchema, Compatibility.CheckType.CAN_BE_READ_BY);
             }
         } catch (ParseException e) {
             System.err.println("Invalid command line arguments. " + e.getMessage());
