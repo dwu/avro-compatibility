@@ -40,6 +40,38 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>native</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.graalvm.buildtools</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <version>${native.maven.plugin.version}</version>
+            <extensions>true</extensions>
+            <executions>
+              <execution>
+                <id>build-native</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>compile-no-fork</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <skip>false</skip>
+              <useArgFile>false</useArgFile>
+              <fallback>false</fallback>
+              <classpath>
+                <param>${project.build.directory}/${project.artifactId}-${project.version}-shaded.jar</param>
+              </classpath>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -59,5 +91,6 @@
     <maven.compiler.source>11</maven.compiler.source>
     <avro.version>1.11.2</avro.version>
     <guava.version>32.1.1-jre</guava.version>
+    <native.maven.plugin.version>0.9.23</native.maven.plugin.version>
   </properties>
 </project>
